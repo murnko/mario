@@ -76,7 +76,7 @@ public class MainRun
         //    AgentsPool.addAgent(new AStarAgent());
 //            AgentsPool.addAgent(new RjAgent());
             //AgentsPool.addAgent(new SergeyKarakovskiy_JumpingAgent());
-            //AgentsPool.addAgent(new AStarAgent());
+//            AgentsPool.addAgent(new AStarAgent());
             AgentsPool.addAgent(new SVMAgent());
             
         }
@@ -106,7 +106,7 @@ public class MainRun
         marioStatusSum = 0;
         timeLeftSum = 0;
         marioModeSum = 0;
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < 2; i++){
         competitionScore += testConfig (controller, options, startingSeed+i, 0, false);
         }
 //        competitionScore += testConfig (controller, options, startingSeed, 0, false);
