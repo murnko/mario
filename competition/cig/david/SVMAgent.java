@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 
 /* This program is free software. It comes without any warranty, to
  * the extent permitted by applicable law. You can redistribute it
@@ -29,12 +30,14 @@ public class SVMAgent implements Agent
     private AStarSimulator sim;
     private float lastX = 0;
     private float lastY = 0;
+    private String stamp = Integer.toString(LocalDateTime.now().getMinute());
     
     svm_model model0;
     svm_node[] node;
     private Double predaction;
     protected boolean SvmActions[] = new boolean[Environment.numberOfButtons];
     byte helpMario = 0;
+    final byte handicap = 0; 
     
     public void reset()
     {
@@ -43,7 +46,7 @@ public class SVMAgent implements Agent
         
         FileReader fr;
 		try {
-			fr = new FileReader("model1N");
+			fr = new FileReader("modelMASA1");
 			BufferedReader br = new BufferedReader(fr);
 			model0 = svm.svm_load_model(br);
 		} catch (FileNotFoundException e) {
@@ -82,7 +85,10 @@ public class SVMAgent implements Agent
      	byte[][] scene = observation.getLevelSceneObservationZ(0);
     	float[] enemies = observation.getEnemiesFloatPos();
 		float[] realMarioPos = observation.getMarioFloatPos();
-		byte[][] myScene = observation.getMergedObservationZ(2, 1);
+		byte[][] myScene = observation.getLevelSceneObservationZ(2);
+		byte[][] myEnemies = observation.getEnemiesObservationZ(1);
+		byte[][] myMerged = observation.getMergedObservationZ(2,1);
+		
    	
     	if (sim.levelScene.verbose > 2) System.out.println("Simulating using action: " + sim.printAction(action));
         
@@ -115,7 +121,7 @@ public class SVMAgent implements Agent
 		sim.setLevelPart(scene, enemies);
 		System.out.println(realMarioPos[0] + " " + realMarioPos[1]);
 		if (lastX == realMarioPos[0] && lastY == realMarioPos[1]){
-			helpMario = 0;
+			helpMario = handicap;
 		}
 		
 		lastX = realMarioPos[0];
@@ -128,7 +134,7 @@ public class SVMAgent implements Agent
         
         // Some time budgeting, so that we do not go over 40 ms in average.
         sim.timeBudget += 39 - (int)(System.currentTimeMillis() - startTime);
-        node = GetSVMNode(myScene);
+        node = GetSVMNodeM(myMerged);
         predaction = svm.svm_predict(model0, node);
         int keysInt = predaction.intValue();
         System.out.println(helpMario);
@@ -156,7 +162,7 @@ public class SVMAgent implements Agent
         System.out.println("\n---");
         
         
-        SaveToFile(myScene, action);
+//        SaveToFile(myScene,myEnemies, action);
         System.out.flush();
         
         return SvmActions;
@@ -178,8 +184,8 @@ public class SVMAgent implements Agent
     }
     
     //David
-    public void SaveToFile(byte[][] myScene, boolean[] action){
-    	try(FileWriter fw = new FileWriter("raw_data_svmA0", true);
+    public void SaveToFile(byte[][] myScene,byte[][] myEnemies , boolean[] action){
+    	try(FileWriter fw = new FileWriter("raw_data_sa1_"+stamp, true);
     		    BufferedWriter bw = new BufferedWriter(fw);
     		    PrintWriter out = new PrintWriter(bw))
     		{
@@ -189,6 +195,12 @@ public class SVMAgent implements Agent
     				}
     				out.println();
     			}
+//    			for (byte[] row : myEnemies){
+//    				for (byte crate : row){
+//    					out.print(crate + " ");
+//    				}
+//    				out.println();
+//    			}
     			
     			for (boolean key : action){
     				if (key) out.print(1 + " ");
@@ -202,7 +214,29 @@ public class SVMAgent implements Agent
     	
         }
     
-    public svm_node[] GetSVMNode(byte[][] myScene ){
+    public svm_node[] GetSVMNode(byte[][] myScene, byte[][] myEnemies ){
+    	
+		svm_node[] node = new svm_node[72];
+		int index = 0;
+    	for (int i = 8; i < 14; i++ ){
+    		for (int j = 11; j <17; j++) {
+    			node[index] = new svm_node();
+    			node[index].SetValue(index, myScene[i][j]);
+    			index ++;
+    		}
+    	}
+		for (int k = 8; k < 14; k++ ){
+    		for (int j = 11; j <17; j++) {
+    			node[index] = new svm_node();
+    			node[index].SetValue(index, myEnemies[k][j]);
+    			index ++;
+    		}
+    	}
+    	return node;
+			
+    }
+    
+public svm_node[] GetSVMNodeM(byte[][] myScene){
     	
 		svm_node[] node = new svm_node[36];
 		int index = 0;
@@ -213,6 +247,7 @@ public class SVMAgent implements Agent
     			index ++;
     		}
     	}
+		
     	return node;
 			
     }

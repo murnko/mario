@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 
 /* This program is free software. It comes without any warranty, to
  * the extent permitted by applicable law. You can redistribute it
@@ -23,6 +24,9 @@ public class AStarAgent implements Agent
     private AStarSimulator sim;
     private float lastX = 0;
     private float lastY = 0;
+    private String stamp = Integer.toString(LocalDateTime.now().getMinute());
+    
+  
     
     public void reset()
     {
@@ -54,7 +58,10 @@ public class AStarAgent implements Agent
      	byte[][] scene = observation.getLevelSceneObservationZ(0);
     	float[] enemies = observation.getEnemiesFloatPos();
 		float[] realMarioPos = observation.getMarioFloatPos();
-		byte[][] myScene = observation.getMergedObservationZ(2, 1);
+		byte[][] myScene = observation.getLevelSceneObservationZ(2);
+		byte[][] myEnemies = observation.getEnemiesObservationZ(1);
+		byte[][] myMerged = observation.getMergedObservationZ(2,1);
+		
    	
     	if (sim.levelScene.verbose > 2) System.out.println("Simulating using action: " + sim.printAction(action));
         
@@ -96,7 +103,7 @@ public class AStarAgent implements Agent
         
         // Some time budgeting, so that we do not go over 40 ms in average.
         sim.timeBudget += 39 - (int)(System.currentTimeMillis() - startTime);
-        SaveToFile(myScene, action);
+        SaveToFile(myMerged, myEnemies, action);
         System.out.flush();
         
         return action;
@@ -118,8 +125,8 @@ public class AStarAgent implements Agent
     }
     
     //David
-    public void SaveToFile(byte[][] myScene, boolean[] action){
-    	try(FileWriter fw = new FileWriter("raw_data_10", true);
+    public void SaveToFile(byte[][] myScene,byte[][] myEnemies , boolean[] action){
+    	try(FileWriter fw = new FileWriter("raw_data_t" + stamp , true);
     		    BufferedWriter bw = new BufferedWriter(fw);
     		    PrintWriter out = new PrintWriter(bw))
     		{
@@ -129,6 +136,12 @@ public class AStarAgent implements Agent
     				}
     				out.println();
     			}
+//    			for (byte[] row : myEnemies){
+//    				for (byte crate : row){
+//    					out.print(crate + " ");
+//    				}
+//    				out.println();
+//    			}
     			
     			for (boolean key : action){
     				if (key) out.print(1 + " ");
