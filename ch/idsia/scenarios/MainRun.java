@@ -15,6 +15,7 @@ import ch.idsia.tools.EvaluationOptions;
 import ch.idsia.tools.Evaluator;
 import ch.idsia.utils.StatisticalSummary;
 import competition.cig.robinbaumgarten.AStarAgent;
+import competition.cig.david.InterpTrainAgent;
 import competition.cig.david.SVMAgent;;
 
 /**
@@ -27,7 +28,7 @@ import competition.cig.david.SVMAgent;;
 
 public class MainRun 
 {
-    final static int numberOfTrials = 11;//10;
+    final static int numberOfTrials = 10;//10;
     final static boolean scoring = true;
     private static int killsSum = 0;
     private static int marioStatusSum = 0;
@@ -77,7 +78,8 @@ public class MainRun
 //            AgentsPool.addAgent(new RjAgent());
             //AgentsPool.addAgent(new SergeyKarakovskiy_JumpingAgent());
 //            AgentsPool.addAgent(new AStarAgent());
-            AgentsPool.addAgent(new SVMAgent());
+            AgentsPool.addAgent(new InterpTrainAgent());
+//            AgentsPool.addAgent(new SVMAgent());
             
         }
     }
@@ -101,14 +103,15 @@ public class MainRun
 //        options.setMaxFPS(true);
         System.out.println("\nScoring controller " + agent.getName() + " with starting seed " + startingSeed);
 
-        double competitionScore = 0;
-        killsSum = 0;
-        marioStatusSum = 0;
-        timeLeftSum = 0;
-        marioModeSum = 0;
-        for (int i = 0; i < 2; i++){
+        
+        for (int i = 0; i < 50; i++){
+        	double competitionScore = 0;
+            killsSum = 0;
+            marioStatusSum = 0;
+            timeLeftSum = 0;
+            marioModeSum = 0;
         competitionScore += testConfig (controller, options, startingSeed+i, 0, false);
-        }
+        
 //        competitionScore += testConfig (controller, options, startingSeed, 0, false);
 //        competitionScore += testConfig (controller, options, startingSeed, 3, false);
 //       competitionScore += testConfig (controller, options, startingSeed, 5, false);
@@ -120,6 +123,7 @@ public class MainRun
         System.out.println("timeLeft Sum = " + timeLeftSum);
         System.out.println("marioMode Sum = " + marioModeSum);
         System.out.println("TOTAL SUM for " + agent.getName() + " = " + (competitionScore + killsSum + marioStatusSum + marioModeSum + timeLeftSum));
+        }
     }
 
     public static double testConfig (TimingAgent controller, EvaluationOptions options, int seed, int levelDifficulty, boolean paused) {
