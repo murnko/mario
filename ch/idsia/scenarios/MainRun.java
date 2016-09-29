@@ -117,11 +117,11 @@ public class MainRun
 //       competitionScore += testConfig (controller, options, startingSeed, 5, false);
 //       competitionScore += testConfig (controller, options, startingSeed, 10, false);
      
-        System.out.println("Competition score: " + competitionScore);
-        System.out.println("Total kills Sum = " + killsSum);
-        System.out.println("marioStatus Sum  = " + marioStatusSum);
-        System.out.println("timeLeft Sum = " + timeLeftSum);
-        System.out.println("marioMode Sum = " + marioModeSum);
+//        System.out.println("Competition score: " + competitionScore);
+//        System.out.println("Total kills Sum = " + killsSum);
+//        System.out.println("marioStatus Sum  = " + marioStatusSum);
+//        System.out.println("timeLeft Sum = " + timeLeftSum);
+//        System.out.println("marioMode Sum = " + marioModeSum);
         System.out.println("TOTAL SUM for " + agent.getName() + " = " + (competitionScore + killsSum + marioStatusSum + marioModeSum + timeLeftSum));
         }
     }
@@ -170,12 +170,12 @@ public class MainRun
             ss.add (result.computeDistancePassed());
         }
 
-        System.out.println("\n===================\nStatistics over 10 runs for " + controller.getName());
-        System.out.println("Total kills = " + kills);
-        System.out.println("marioStatus = " + marioStatus);
-        System.out.println("timeLeft = " + timeLeft);
-        System.out.println("marioMode = " + marioMode);
-        System.out.println("===================\n");
+//        System.out.println("\n===================\nStatistics over 10 runs for " + controller.getName());
+//        System.out.println("Total kills = " + kills);
+//        System.out.println("marioStatus = " + marioStatus);
+//        System.out.println("timeLeft = " + timeLeft);
+//        System.out.println("marioMode = " + marioMode);
+//        System.out.println("===================\n");
 
         killsSum += kills;
         marioStatusSum += marioStatus;
