@@ -22,6 +22,7 @@ import competition.cig.robinbaumgarten.astar.sprites.Mario;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
+import java.util.Random;
 
 public class SVMAgent implements Agent
 {
@@ -37,7 +38,9 @@ public class SVMAgent implements Agent
     private Double predaction;
     protected boolean SvmActions[] = new boolean[Environment.numberOfButtons];
     byte helpMario = 0;
-    final byte handicap = 0; 
+    final byte handicap = 1;
+    private boolean blocked = false;
+    private Random rn = new Random();
     
     public void reset()
     {
@@ -46,7 +49,7 @@ public class SVMAgent implements Agent
         
         FileReader fr;
 		try {
-			fr = new FileReader("modelMASA1");
+			fr = new FileReader("model_6");
 			BufferedReader br = new BufferedReader(fr);
 			model0 = svm.svm_load_model(br);
 		} catch (FileNotFoundException e) {
@@ -120,9 +123,11 @@ public class SVMAgent implements Agent
 		// Update the internal world to the new information received
 		sim.setLevelPart(scene, enemies);
 		System.out.println(realMarioPos[0] + " " + realMarioPos[1]);
-		if (lastX == realMarioPos[0] && lastY == realMarioPos[1]){
-			helpMario = handicap;
-		}
+//		if (lastX == realMarioPos[0] && lastY == realMarioPos[1]){
+////			helpMario = handicap;
+//			blocked = true;
+//		}
+//		else blocked = false;
 		
 		lastX = realMarioPos[0];
 		lastY = realMarioPos[1];
@@ -138,6 +143,11 @@ public class SVMAgent implements Agent
         predaction = svm.svm_predict(model0, node);
         int keysInt = predaction.intValue();
         System.out.println(helpMario);
+        
+        
+        if (rn.nextInt(1000) > 50 && helpMario == 0) {
+        	helpMario = handicap;
+        }
         if (helpMario > 0) {
         	SvmActions = action;
         	helpMario --;
@@ -145,6 +155,10 @@ public class SVMAgent implements Agent
         else {
         	SvmActions = toBinary(keysInt,5);
         }
+        
+        
+        	
+        
        
         
 //        System.out.println(Long.toBinaryString(Double.doubleToRawLongBits(predaction)));
@@ -161,10 +175,11 @@ public class SVMAgent implements Agent
         }
         System.out.println("\n---");
         
-        
-//        SaveToFile(myScene,myEnemies, action);
+        if (blocked) action = toBinary(0,5);
+        SaveToFile(myScene,myEnemies, action);
         System.out.flush();
         
+        //Ruch zawsze na podstawie uczącego się klasyfikatora
         return SvmActions;
     }
 
@@ -185,7 +200,7 @@ public class SVMAgent implements Agent
     
     //David
     public void SaveToFile(byte[][] myScene,byte[][] myEnemies , boolean[] action){
-    	try(FileWriter fw = new FileWriter("raw_data_sa1_"+stamp, true);
+    	try(FileWriter fw = new FileWriter("raw_data_IASA2_"+stamp, true);
     		    BufferedWriter bw = new BufferedWriter(fw);
     		    PrintWriter out = new PrintWriter(bw))
     		{
