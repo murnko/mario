@@ -289,7 +289,7 @@ public class InterpTrainAgent implements Agent
 		param.nr_weight = 0;
 		
 //		param.shrinking = 0;
-		prob.l = samples_counter.intValue();
+		prob.l = samples_counter.intValue()*(session_counter+1);
 		Double[] Labels = actions_rec.toArray(new Double[actions_rec.size()]);
 		prob.y = Stream.of(Labels).mapToDouble(Double::doubleValue).toArray();
 		svm_node[][] Features = session_rec.toArray(new svm_node[session_rec.size()][]);
